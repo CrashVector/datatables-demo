@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var srcData = $.getJSON("json2.php");
+  // var srcData = $.getJSON('json2.php');
   var dataTable = $('#samples').DataTable({
     'processing': true,
     'serverSide': false,
@@ -8,10 +8,14 @@ $(document).ready(function () {
       [100, 250, 500, -1],
       [100, 250, 500, 'All']
     ],
-    data: srcData,
+    ajax: {
+      url: './data.json',
+      // url: './datatables.php',
+      dataSrc: ''
+    },
     columns: [
       {
-        data: '0',
+        data: '',
         defaultContent: '0',
         visible: false
       },
@@ -23,36 +27,36 @@ $(document).ready(function () {
         targets: 1,
         orderData: [0]
       },
-	  {
-		 title: 'ID',
+      {
+        title: 'ID',
         'className': 'dt-left',
-		"visible": false,
-        data: 1 
-	  },
+        'visible': false,
+        data: 'ID'
+      },
       {
         title: 'Name',
         'className': 'dt-left',
-        data: 2
+        data: 'Name'
       },
       {
         title: 'Region/Program',
         'className': 'dt-left',
-        data: 3
+        data: 'Region'
       },
       {
         title: 'Class',
         'className': 'dt-left',
-        data: 4
+        data: 'Class'
       },
       {
         title: 'Category',
         'className': 'dt-left',
-        data: 5
+        data: 'Category'
       },
       {
         title: 'QC Concerns',
         'className': 'dt-left',
-        data: 7
+        data: 'QC_comment'
       }
     ],
     select: {
