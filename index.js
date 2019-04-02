@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var srcData = $.getJSON("http://groot.r07.epa.gov/json2.php");
+  var srcData = $.getJSON("json2.php");
   var dataTable = $('#samples').DataTable({
     'processing': true,
     'serverSide': false,
