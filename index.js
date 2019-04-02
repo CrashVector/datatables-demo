@@ -1,10 +1,5 @@
 $(document).ready(function () {
-  var srcData = [
-    {"1":"1","2":"01_p11017","3":"GoM","4":"unknown","5":"unknown","7":"0","6":"\r"},
-    {"1":"2","2":"02_p21017","3":"GoM","4":"unknown","5":"unknown","7":"0","6":"\r"},
-    {"1":"3","2":"03_p31017","3":"GoM","4":"unknown","5":"unknown","7":"0","6":"\r"},
-    {"1":"4","2":"04_p41017","3":"GoM","4":"unknown","5":"unknown","7":"0","6":"\r"}
-  ];
+  var srcData = $.getJSON("http://groot.r07.epa.gov/json2.php");
   var dataTable = $('#samples').DataTable({
     'processing': true,
     'serverSide': false,
@@ -28,6 +23,12 @@ $(document).ready(function () {
         targets: 1,
         orderData: [0]
       },
+	  {
+		 title: 'ID',
+        'className': 'dt-left',
+		"visible": false,
+        data: 1 
+	  },
       {
         title: 'Name',
         'className': 'dt-left',
@@ -105,7 +106,7 @@ $(document).ready(function () {
   });
 
   //grab all the unique sorted data entries from the necessary row
-  var category = dataTable.column(2).data().unique().sort();
+  var category = dataTable.column(4).data().unique().sort();
 
   //Drop down menu stop event propagation
   $('#samples').on('click', 'tbody td select',
@@ -123,7 +124,7 @@ $(document).ready(function () {
   dataTable.on('select', function (e, dt, type) {
     if (type === 'row') {
       var row = dataTable.row(dt);
-      $(row.node()).find('td:eq(2)').html(
+      $(row.node()).find('td:eq(4)').html(
         '<select>' + category.reduce((options, item) =>
           options += `<option value="${item}" ${
             item == row.data().category ? 'selected' : ''}>${
