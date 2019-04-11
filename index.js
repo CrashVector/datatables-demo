@@ -1,6 +1,9 @@
-$(document).ready(function () {
-  // var srcData = $.getJSON('json2.php');
-  var dataTable = $('#samples').DataTable({
+$(document).ready( function () {	
+		var Category;
+    var dataTable = $('#samples').DataTable({
+    'initComplete': function(settings, json){
+		stuff(settings, json)
+		},
     'processing': true,
     'serverSide': false,
     'pageLength': -1,
@@ -9,8 +12,7 @@ $(document).ready(function () {
       [100, 250, 500, 'All']
     ],
     ajax: {
-      url: './data.json',
-      // url: './datatables.php',
+      url: 'https://api.myjson.com/bins/174mi0',
       dataSrc: ''
     },
     columns: [
@@ -59,6 +61,9 @@ $(document).ready(function () {
         data: 'QC_comment'
       }
     ],
+    rowId: function(a) {
+    return 'id_' + a.ID;
+  },
     select: {
       style: 'multi',
     },
@@ -74,7 +79,7 @@ $(document).ready(function () {
       fieldBoundary: '',
       text: '<span class="fa fa-file-excel-o"></span> Download (ALL) or (SELECTED)',
       exportOptions: {
-        columns: [5, 2],
+        columns: [6, 3],
         modifier: {
           search: 'applied',
           order: 'applied'
@@ -97,6 +102,7 @@ $(document).ready(function () {
     {
       text: 'Select Default Library 1',
       action: function (e, dt, node, conf) {
+     
         alert('This button will automatically check all rows that match predefined list 1 using the hidden ID column.');
       }
     },
@@ -109,8 +115,9 @@ $(document).ready(function () {
     ]
   });
 
+function stuff(settings, json){
   //grab all the unique sorted data entries from the necessary row
-  var category = dataTable.column(4).data().unique().sort();
+  Category = dataTable.column(6).data().unique().sort();
 
   //Drop down menu stop event propagation
   $('#samples').on('click', 'tbody td select',
@@ -120,7 +127,7 @@ $(document).ready(function () {
   var writeCell = dropdown => {
     var currentRow = dataTable.row(dropdown.closest('tr'));
     var rowData = currentRow.data();
-    rowData.category = dropdown.val();
+    rowData.Category = dropdown.val();
     currentRow.remove();
     dataTable.row.add(rowData).draw();
   };
@@ -129,13 +136,24 @@ $(document).ready(function () {
     if (type === 'row') {
       var row = dataTable.row(dt);
       $(row.node()).find('td:eq(4)').html(
-        '<select>' + category.reduce((options, item) =>
+        '<select id="ID">' + Category.reduce((options, item) =>
           options += `<option value="${item}" ${
-            item == row.data().category ? 'selected' : ''}>${
+            item == row.data().Category ? 'selected' : ''}>${
             item}</option>`, '') + '</select>'
       );
       toggleDataAndDraw(row, type, '1');
     }
+    
+    $('#ID').on('change', function () {
+    var optionSelected = $("option:selected", this);
+    var valueSelected = this.value;
+    var row = $(this).closest('tr');
+
+var cell = dataTable.cell(row, 6);
+cell.data(valueSelected)
+
+})
+    
   });
 
   dataTable.on('deselect', function (e, dt, type) {
@@ -153,6 +171,7 @@ $(document).ready(function () {
         column: 0
       }).data(dataVal);
       dataTable.draw();
+    }
     }
   };
 });
