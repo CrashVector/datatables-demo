@@ -1,9 +1,11 @@
-$(document).ready( function () {	
-		var Category;
-    var dataTable = $('#samples').DataTable({
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+$(document).ready( function () {
+  var Category;
+  var dataTable = $('#samples').DataTable({
     'initComplete': function(settings, json){
-		stuff(settings, json)
-		},
+      stuff(settings, json);
+    },
     'processing': true,
     'serverSide': false,
     'pageLength': -1,
@@ -62,8 +64,8 @@ $(document).ready( function () {
       }
     ],
     rowId: function(a) {
-    return 'id_' + a.ID;
-  },
+      return 'id_' + a.ID;
+    },
     select: {
       style: 'multi',
     },
@@ -102,7 +104,6 @@ $(document).ready( function () {
     {
       text: 'Select Default Library 1',
       action: function (e, dt, node, conf) {
-     
         alert('This button will automatically check all rows that match predefined list 1 using the hidden ID column.');
       }
     },
@@ -115,63 +116,61 @@ $(document).ready( function () {
     ]
   });
 
-function stuff(settings, json){
-  //grab all the unique sorted data entries from the necessary row
-  Category = dataTable.column(6).data().unique().sort();
+  function stuff(settings, json){
+    //grab all the unique sorted data entries from the necessary row
+    Category = dataTable.column(6).data().unique().sort();
 
-  //Drop down menu stop event propagation
-  $('#samples').on('click', 'tbody td select',
-    event => event.stopPropagation());
+    //Drop down menu stop event propagation
+    $('#samples').on('click', 'tbody td select',
+      event => event.stopPropagation());
 
-  //Write dropdown value into table
-  var writeCell = dropdown => {
-    var currentRow = dataTable.row(dropdown.closest('tr'));
-    var rowData = currentRow.data();
-    rowData.Category = dropdown.val();
-    currentRow.remove();
-    dataTable.row.add(rowData).draw();
-  };
+    //Write dropdown value into table
+    var writeCell = dropdown => {
+      var currentRow = dataTable.row(dropdown.closest('tr'));
+      var rowData = currentRow.data();
+      rowData.Category = dropdown.val();
+      currentRow.remove();
+      dataTable.row.add(rowData).draw();
+    };
 
-  dataTable.on('select', function (e, dt, type) {
-    if (type === 'row') {
-      var row = dataTable.row(dt);
-      $(row.node()).find('td:eq(4)').html(
-        '<select id="ID">' + Category.reduce((options, item) =>
-          options += `<option value="${item}" ${
-            item == row.data().Category ? 'selected' : ''}>${
-            item}</option>`, '') + '</select>'
-      );
-      toggleDataAndDraw(row, type, '1');
-    }
-    
-    $('#ID').on('change', function () {
-    var optionSelected = $("option:selected", this);
-    var valueSelected = this.value;
-    var row = $(this).closest('tr');
+    dataTable.on('select', function (e, dt, type) {
+      if (type === 'row') {
+        var row = dataTable.row(dt);
+        $(row.node()).find('td:eq(4)').html(
+          '<select id="ID">' + Category.reduce((options, item) =>
+            options += `<option value="${item}" ${
+              item == row.data().Category ? 'selected' : ''}>${
+              item}</option>`, '') + '</select>'
+        );
+        toggleDataAndDraw(row, type, '1');
+      }
 
-var cell = dataTable.cell(row, 6);
-cell.data(valueSelected)
+      $('#ID').on('change', function () {
+        var optionSelected = $('option:selected', this);
+        var valueSelected = this.value;
+        var row = $(this).closest('tr');
 
-})
-    
-  });
+        var cell = dataTable.cell(row, 6);
+        cell.data(valueSelected);
+      });
+    });
 
-  dataTable.on('deselect', function (e, dt, type) {
-    if (type === 'row') {
-      var row = dataTable.row(dt);
-      writeCell($(row.node()).find('select'));
-      toggleDataAndDraw(row, type, '0');
-    }
-  });
+    dataTable.on('deselect', function (e, dt, type) {
+      if (type === 'row') {
+        var row = dataTable.row(dt);
+        writeCell($(row.node()).find('select'));
+        toggleDataAndDraw(row, type, '0');
+      }
+    });
 
-  var toggleDataAndDraw = (row, type, dataVal) => {
-    if (type === 'row') {
-      dataTable.cell({
-        row: row.index(),
-        column: 0
-      }).data(dataVal);
-      dataTable.draw();
-    }
-    }
-  };
+    var toggleDataAndDraw = (row, type, dataVal) => {
+      if (type === 'row') {
+        dataTable.cell({
+          row: row.index(),
+          column: 0
+        }).data(dataVal);
+        dataTable.draw();
+      }
+    };
+  }
 });
