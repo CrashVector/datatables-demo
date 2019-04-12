@@ -64,8 +64,8 @@ $(document).ready( function () {
       }
     ],
     rowId: function(a) {
-      return 'id_' + a.ID;
-    },
+    return 'sampleid_' + a.ID;
+  },
     select: {
       style: 'multi',
     },
@@ -104,6 +104,10 @@ $(document).ready( function () {
     {
       text: 'Select Default Library 1',
       action: function (e, dt, node, conf) {
+        var rowSelector = [ '#sampleid_10', '#sampleid_2', '#sampleid_401'  ];
+        var row1 = dataTable.rows(rowSelector);
+        var data1 = row1.data();
+        console.log(data1);
         alert('This button will automatically check all rows that match predefined list 1 using the hidden ID column.');
       }
     },
