@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 $(document).ready( function () {
-  var Category;
-  var dataTable = $('#samples').DataTable({
+    var Category;
+    var dataTable = $('#samples').DataTable({
+      //Stops the Category variable from being filled until the table has loaded
     'initComplete': function(settings, json){
-      stuff(settings, json);
-    },
+		categoryFill(settings, json);
+		},
     'processing': true,
     'serverSide': false,
     'pageLength': -1,
@@ -19,11 +20,15 @@ $(document).ready( function () {
     },
     columns: [
       {
+        //column to track what is selected and what isn't
+        title: 'check-uncheck',
         data: '',
         defaultContent: '0',
-        visible: false
+        visible: true
       },
       {
+        title: 'checkbox',
+        visible: true,
         data: '',
         defaultContent: '',
         orderable: false,
@@ -34,7 +39,7 @@ $(document).ready( function () {
       {
         title: 'ID',
         'className': 'dt-left',
-        'visible': false,
+        'visible': true,
         data: 'ID'
       },
       {
@@ -63,7 +68,8 @@ $(document).ready( function () {
         data: 'QC_comment'
       }
     ],
-    rowId: function(a) {
+      //creates a unique rowId by using the ID column from the database
+      rowId: function(a) {
     return 'sampleid_' + a.ID;
   },
     select: {
@@ -103,13 +109,9 @@ $(document).ready( function () {
     },
     {
       text: 'Select Default Library 1',
-      action: function (e, dt, node, conf) {
-        var rowSelector = [ '#sampleid_10', '#sampleid_2', '#sampleid_401'  ];
-        var row1 = dataTable.rows(rowSelector);
-        var data1 = row1.data();
-        console.log(data1);
-        alert('This button will automatically check all rows that match predefined list 1 using the hidden ID column.');
-      }
+      action: function (dt) {
+        defaultselect1 (dt);
+     }
     },
     {
       text: 'Select Default Library 2',
@@ -120,61 +122,104 @@ $(document).ready( function () {
     ]
   });
 
-  function stuff(settings, json){
-    //grab all the unique sorted data entries from the necessary row
-    Category = dataTable.column(6).data().unique().sort();
+  
+//This function adds all the unique entries from the category 
+//column into a variabl AFTER the table load is complete
 
-    //Drop down menu stop event propagation
-    $('#samples').on('click', 'tbody td select',
-      event => event.stopPropagation());
+  function categoryFill(settings, json){
+  Category = dataTable.column(6).data().unique().sort();
+  };
+  
+  
+  
+//This function selects all the rows in the rowSelector1 variable when the
+//default library 1 button is clicked
+  //PROBLEM: Doesn't trigger datatTable.on select routine, and errors saying
+  //that Cannot read property 'Category' of undefined .....needs .dt?
+  defaultselect1 = function(dt){
+        var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401'  ];
+        dataTable.rows(rowSelector1).select();
+  };
+  
+  
+//Not sure how the following functions/routines need to be broken out to fix 
+//errant behaviors (not selecting, not populating dropdown, deselect causing
+//1 or 0 to be displayed inconsistently, not saving dropdown value when selected,
+//not redrawing table, multiple selection causing dropdown issues, second check-uncheck
+//column being created when deselecting row, etc...)
+  
 
-    //Write dropdown value into table
-    var writeCell = dropdown => {
-      var currentRow = dataTable.row(dropdown.closest('tr'));
-      var rowData = currentRow.data();
-      rowData.Category = dropdown.val();
-      currentRow.remove();
-      dataTable.row.add(rowData).draw();
-    };
+  //Not sure why this is needed?
+  //Drop down menu stop event propagation
+  $('#samples').on('click', 'tbody td select',
+    event => event.stopPropagation());
 
-    dataTable.on('select', function (e, dt, type) {
-      if (type === 'row') {
-        var row = dataTable.row(dt);
-        $(row.node()).find('td:eq(4)').html(
-          '<select id="ID">' + Category.reduce((options, item) =>
-            options += `<option value="${item}" ${
-              item == row.data().Category ? 'selected' : ''}>${
-              item}</option>`, '') + '</select>'
-        );
-        toggleDataAndDraw(row, type, '1');
-      }
+  
+  
+  //Write dropdown value into table
+  var writeCell = dropdown => {
+    var currentRow = dataTable.row(dropdown.closest('tr'));
+    var rowData = currentRow.data();
+    rowData.Category = dropdown.val();
+    currentRow.remove();
+    dataTable.row.add(rowData).draw();
+  };
 
-      $('#ID').on('change', function () {
-        var optionSelected = $('option:selected', this);
+  
+  
+  
+  //triggers on select/deselect to move selected rows to top of table and
+  //add dropdown menu for Category column
+    //I don't understand how the select id = 'test' and '#test' pieces work. Should they
+    //be associated with the row #id?
+    // deselecting a row where the category column has been changed triggers errors
+  dataTable
+  
+    .on('select', function (e, dt, type) {
+    if (type === 'row') {
+      var row = dataTable.row(dt);
+      $(row.node()).find('td:eq(6)').html(
+        '<select id="test">' + Category.reduce((options, item) =>
+          options += `<option value="${item}" ${
+            item == row.data().Category ? 'selected' : ''}>${
+            item}</option>`, '') + '</select>'
+          );
+     
+          toggleDataAndDraw(row, type, '1');
+          }
+    
+    
+        $('#test').on('change', function () {
+        var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
         var row = $(this).closest('tr');
-
         var cell = dataTable.cell(row, 6);
-        cell.data(valueSelected);
-      });
-    });
-
-    dataTable.on('deselect', function (e, dt, type) {
-      if (type === 'row') {
-        var row = dataTable.row(dt);
-        writeCell($(row.node()).find('select'));
-        toggleDataAndDraw(row, type, '0');
-      }
-    });
-
-    var toggleDataAndDraw = (row, type, dataVal) => {
-      if (type === 'row') {
-        dataTable.cell({
-          row: row.index(),
-          column: 0
-        }).data(dataVal);
-        dataTable.draw();
-      }
-    };
-  }
+        cell.data(valueSelected)
+          })
+    
+        })
+    .on('deselect', function (e, dt, type) {
+    if (type === 'row') {
+      var row = dataTable.row(dt);
+      writeCell($(row.node()).find('select'));
+      toggleDataAndDraw(row, type, '0');
+    }
+  });
+  
+ 
+ //This function is called to write the check-uncheck value and redraw the table
+  //What is the row.index, and should/can the row #id be used instead?
+  var toggleDataAndDraw = (row, type, dataVal) => {
+    if (type === 'row') {
+      dataTable.cell({
+        row: row.index(),
+        column: 0,
+        visible: false
+      }).data(dataVal);
+      dataTable.draw();
+    }
+    
+   
+    
+  };
 });
