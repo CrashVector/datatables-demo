@@ -84,8 +84,30 @@ $(document).ready( function () {
       [3, 'asc']
     ]),
     orderFixed: [0, 'desc'],
-    dom: 'Bfrtip',
+    dom: '<Bif<t>ilp>',
     buttons: [
+      
+      {
+        text: 'Select Default Library 1',
+        action: function (dt) {
+          deselectAll();
+          defaultselect1 (dt);
+        }
+      },
+      
+      {
+        text: 'Select Default Library 2',
+        action: function (dt) {
+          deselectAll();
+          defaultselect2 (dt);
+        }
+      },
+      {
+                text: 'Deselect All',
+                action: function (dt) {
+                  deselectAll (dt);
+                }
+      },
       {
         extend: 'csv',
         fieldBoundary: '',
@@ -97,12 +119,6 @@ $(document).ready( function () {
             order: 'applied'
           }
         }
-      },
-      {
-        text: 'Select Default Library 1',
-        action: function (dt) {
-          defaultselect1 (dt);
-        }
       }
     ]
   });
@@ -113,13 +129,27 @@ $(document).ready( function () {
   function categoryFill(settings, json){
     Category = dataTable.column(6).data().unique().sort();
   }
+  
+  //This function deselects all rows
+  deselectAll = function (dt){
+                    dataTable.rows({selected:true}).deselect()
+                    
+  };
 
-  //This function selects all the rows in the rowSelector1 variable (via the unique rowId)
+  //These functions select all the rows in the rowSelector variable (via the unique rowId)
   //when the default library 1 button is clicked
-  //PROBLEM: Doesn't trigger datatTable.on select routine, and errors saying
-  //that Cannot read property 'Category' of undefined .....needs .dt?
+  
   defaultselect1 = function(dt){
-    var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401'  ];
+    var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401', 
+                            '#sampleid_17', '#sampleid_32', '#sampleid_316', '#sampleid_99', 
+                            '#sampleid_104', '#sampleid_105', '#sampleid_77', '#sampleid_208'];
+    dataTable.rows(rowSelector1).select();
+  };
+  
+  defaultselect2 = function(dt){
+    var rowSelector1 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401', 
+                            '#sampleid_222', '#sampleid_132', '#sampleid_116', '#sampleid_199', 
+                            '#sampleid_4', '#sampleid_5'];
     dataTable.rows(rowSelector1).select();
   };
 
@@ -151,8 +181,13 @@ $(document).ready( function () {
   //be associated with the row #id? --OOOHHH, inline HTML, i see)
   // deselecting a row where the category column has been changed triggers errors
   dataTable.on('select', function (e, dt, type) {
-    if (type === 'row') {
-      var row = dataTable.row(dt);
+      console.log('select', dt[0].length)
+      var dt_indexes = dt[0]  //Need to access dt[0] to get row indexes
+      if (type === 'row') {
+      // Loop through each selectes row
+      for (i=0; i < dt_indexes.length; i++) {
+
+      var row = dataTable.row(dt_indexes[i]);
       // Guard clause to check the row length, return if falsey
       if (!row.length) {
         return;
@@ -170,26 +205,40 @@ $(document).ready( function () {
         var cell = dataTable.cell(row, 6);
         cell.data(valueSelected);
       });
+        console.log('toggle')
       toggleDataAndDraw(row, type, 1);
     }
+      }
+    dataTable.draw();
+        
   }).on('deselect', function (e, dt, type) {
+     console.log('deselect', dt[0].length)
+    var dt_indexes = dt[0]  //Need to access dt[0] to get row indexes
     if (type === 'row') {
-      var row = dataTable.row(dt);
-      writeCell($(row.node()).find('select'));
+      //for (i=0; i < dt_indexes.length; i++) {
+      //var row = dataTable.row(dt_indexes[i]); 
+      $.each( dt_indexes, function ( index ) {
+        var row = dataTable.row( index );
+    
+
+      //writeCell($(row.node()).find('select'));
       toggleDataAndDraw(row, type, 0);
+     } );     
     }
+    dataTable.draw();
   });
 
   //This function is called to write the check-uncheck value and redraw the table
   //What is the row.index, and should/can the row #id be used instead?
   var toggleDataAndDraw = (row, type, dataVal) => {
     if (type === 'row') {
+      console.log('toggle');
       dataTable.cell({
         row: row.index(),
         column: 0,
         visible: false
       }).data(dataVal);
-      dataTable.draw();
+      //dataTable.draw();
     }
   };
 });
