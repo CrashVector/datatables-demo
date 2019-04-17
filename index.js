@@ -218,6 +218,12 @@ $(document).ready( function () {
       $.each( dt_indexes, function ( index ) {
         var row = dataTable.row( dt_indexes[index] );
     
+        //Somewhere in here needs to be a var that saves the current category for each row to be deselected?
+        //that would then be set for those columns/rows. But would also need to function for single manual select/deselects
+        //(Or is there an easier way by just hiding the div?)
+        //var valuecat = 
+        //var cell = dataTable.cell(row, 6);
+        //cell.data(valuecat);
 
       //writeCell($(row.node()).find('select'));
       toggleDataAndDraw(row, type, 0);
