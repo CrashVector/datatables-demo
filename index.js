@@ -85,7 +85,7 @@ $(document).ready( function () {
     ]),
     orderFixed: [0, 'desc'],
     dom: '<Bif<t>ilp>',
-    buttons: [
+     buttons: [
       
       {
         text: 'Select Default Library 1',
@@ -133,13 +133,11 @@ $(document).ready( function () {
   //This function deselects all rows
   deselectAll = function (dt){
                     dataTable.rows({selected:true}).deselect()
-                    
+                    //dataTable.rows().deselect()
   };
 
   //These functions select all the rows in the rowSelector variable (via the unique rowId)
-  //when the default library 1 button is clicked
-  
-  defaultselect1 = function(dt){
+ defaultselect1 = function(dt){
     var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401', 
                             '#sampleid_17', '#sampleid_32', '#sampleid_316', '#sampleid_99', 
                             '#sampleid_104', '#sampleid_105', '#sampleid_77', '#sampleid_208'];
@@ -149,7 +147,7 @@ $(document).ready( function () {
   defaultselect2 = function(dt){
     var rowSelector1 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401', 
                             '#sampleid_222', '#sampleid_132', '#sampleid_116', '#sampleid_199', 
-                            '#sampleid_4', '#sampleid_5'];
+                            '#sampleid_4', '#sampleid_5', '#sampleid_277', '#sampleid_308'];
     dataTable.rows(rowSelector1).select();
   };
 
@@ -185,9 +183,9 @@ $(document).ready( function () {
       var dt_indexes = dt[0]  //Need to access dt[0] to get row indexes
       if (type === 'row') {
       // Loop through each selectes row
-      for (i=0; i < dt_indexes.length; i++) {
+      $.each( dt_indexes, function ( index ) {
 
-      var row = dataTable.row(dt_indexes[i]);
+      var row = dataTable.row( dt_indexes[index] );
       // Guard clause to check the row length, return if falsey
       if (!row.length) {
         return;
@@ -207,7 +205,7 @@ $(document).ready( function () {
       });
         console.log('toggle')
       toggleDataAndDraw(row, type, 1);
-    }
+    });
       }
     dataTable.draw();
         
@@ -218,7 +216,7 @@ $(document).ready( function () {
       //for (i=0; i < dt_indexes.length; i++) {
       //var row = dataTable.row(dt_indexes[i]); 
       $.each( dt_indexes, function ( index ) {
-        var row = dataTable.row( index );
+        var row = dataTable.row( dt_indexes[index] );
     
 
       //writeCell($(row.node()).find('select'));
