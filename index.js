@@ -153,6 +153,10 @@ $(document).ready( function () {
   dataTable.on('select', function (e, dt, type) {
     if (type === 'row') {
       var row = dataTable.row(dt);
+      // Guard clause to check the row length, return if falsey
+      if (!row.length) {
+        return;
+      }
       $(row.node()).find('td:eq(6)').html(
         '<select >' + Category.reduce((options, item) =>
           options += `<option value="${item}" ${
