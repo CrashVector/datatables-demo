@@ -218,6 +218,13 @@ $(document).ready( function () {
       //var row = dataTable.row(dt_indexes[i]); 
       $.each( dt_indexes, function ( index ) {
         var row = dataTable.row( dt_indexes[index] );
+        
+        //use the guard statement again to fix error when deselecting cells 
+        //that have the category value set?
+        
+        //added to write dropdown value back to table on deselect
+        writeCell($(row.node()).find('select'));
+        
     
         //Somewhere in here needs to be a var that saves the current category for each row to be deselected?
         //that would then be set for those columns/rows. But would also need to function for single manual select/deselects
