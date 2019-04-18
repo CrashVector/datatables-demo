@@ -152,16 +152,12 @@ $(document).ready( function () {
   };
 
   
-
-  
   //Drop down menu stop event propagation (stops dropdown from closing as soon as you click on it)
   $('#samples').on('click', 'tbody td select',
     event => event.stopPropagation());
 
   
-  
- //IS THIS BLOCK EVEN USED?
-  //Write dropdown value into table
+ //Write dropdown value into table
   var writeCell = dropdown => {
     var currentRow = dataTable.row(dropdown.closest('tr'));
     var rowData = currentRow.data();
@@ -171,7 +167,6 @@ $(document).ready( function () {
     );
     currentRow.draw();
   };
-  
   
 
   //triggers on select/deselect to move selected rows to top of table and
@@ -221,20 +216,8 @@ $(document).ready( function () {
         
         //use the guard statement again to fix error when deselecting cells 
         //that have the category value set?
+      writeCell($(row.node()).find('select'));
         
-        //added to write dropdown value back to table on deselect
-        writeCell($(row.node()).find('select'));
-        
-    
-        //Somewhere in here needs to be a var that saves the current category for each row to be deselected?
-        //that would then be set for those columns/rows. But would also need to function for single manual select/deselects
-        //(Or is there an easier way by just hiding the div?)
-        //OR - use writeCell to write current dropdown value to table on deselect?
-        //var valuecat = 
-        //var cell = dataTable.cell(row, 6);
-        //cell.data(valuecat);
-
-      //writeCell($(row.node()).find('select'));
       toggleDataAndDraw(row, type, 0);
      } );     
     }
@@ -242,7 +225,6 @@ $(document).ready( function () {
   });
 
   //This function is called to write the check-uncheck value and redraw the table
-  //What is the row.index, and should/can the row #id be used instead?
   var toggleDataAndDraw = (row, type, dataVal) => {
     if (type === 'row') {
       console.log('toggle');
