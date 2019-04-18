@@ -25,7 +25,7 @@ $(document).ready( function () {
         title: 'check-uncheck',
         data: '',
         defaultContent: '0',
-        visible: false //will be false in final version
+        visible: true //will be false in final version
       },
       {
         title: 'checkbox',
@@ -85,7 +85,8 @@ $(document).ready( function () {
     ]),
     orderFixed: [0, 'desc'],
     dom: '<Bif<t>ilp>',
-    buttons: [
+     buttons: [
+      
       {
         text: 'Select Default Library 1',
         action: function (dt) {
@@ -93,6 +94,7 @@ $(document).ready( function () {
           defaultselect1 (dt);
         }
       },
+      
       {
         text: 'Select Default Library 2',
         action: function (dt) {
@@ -101,10 +103,10 @@ $(document).ready( function () {
         }
       },
       {
-        text: 'Deselect All',
-        action: function (dt) {
-          deselectAll (dt);
-        }
+                text: 'Deselect All',
+                action: function (dt) {
+                  deselectAll (dt);
+                }
       },
       {
         extend: 'csv',
@@ -124,107 +126,110 @@ $(document).ready( function () {
   //This function adds all the unique entries from the category
   //column into a variabl AFTER the table load is complete
 
-  function categoryFill(settings, json) {
+  function categoryFill(settings, json){
     Category = dataTable.column(6).data().unique().sort();
   }
-
+  
   //This function deselects all rows
   deselectAll = function (dt){
-    dataTable.rows({selected:true}).deselect();
+                    dataTable.rows({selected:true}).deselect()
+                    //dataTable.rows().deselect()
   };
 
   //These functions select all the rows in the rowSelector variable (via the unique rowId)
-  defaultselect1 = function(dt){
-    var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401',
-      '#sampleid_17', '#sampleid_32', '#sampleid_316', '#sampleid_99',
-      '#sampleid_104', '#sampleid_105', '#sampleid_77', '#sampleid_208'];
+ defaultselect1 = function(dt){
+    var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401', 
+                            '#sampleid_17', '#sampleid_32', '#sampleid_316', '#sampleid_99', 
+                            '#sampleid_104', '#sampleid_105', '#sampleid_77', '#sampleid_208'];
     dataTable.rows(rowSelector1).select();
   };
-
+  
   defaultselect2 = function(dt){
-    var rowSelector1 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401',
-      '#sampleid_222', '#sampleid_132', '#sampleid_116', '#sampleid_199',
-      '#sampleid_4', '#sampleid_5', '#sampleid_277', '#sampleid_308'];
+    var rowSelector1 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401', 
+                            '#sampleid_222', '#sampleid_132', '#sampleid_116', '#sampleid_199', 
+                            '#sampleid_4', '#sampleid_5', '#sampleid_277', '#sampleid_308'];
     dataTable.rows(rowSelector1).select();
   };
 
-  //Not sure how the following functions/routines need to be broken out to fix
-  //errant behaviors (not selecting, not populating dropdown, deselect causing
-  //1 or 0 to be displayed inconsistently, not saving dropdown value when selected,
-  //not redrawing table, multiple selection causing dropdown issues, second check-uncheck
-  //column being created when deselecting row, etc...)
+  
 
-  //Not sure why this is needed?
-  //Drop down menu stop event propagation
+  
+  //Drop down menu stop event propagation (stops dropdown from closing as soon as you click on it)
   $('#samples').on('click', 'tbody td select',
     event => event.stopPropagation());
 
+  
+  
+ //IS THIS BLOCK EVEN USED?
   //Write dropdown value into table
   var writeCell = dropdown => {
     var currentRow = dataTable.row(dropdown.closest('tr'));
     var rowData = currentRow.data();
     rowData.Category = dropdown.val();
-    $(currentRow.node()).find('td:eq(5)').html(
+    $(currentRow.node()).find('td:eq(6)').html(
       currentRow.data().Category
     );
     currentRow.draw();
   };
+  
+  
 
   //triggers on select/deselect to move selected rows to top of table and
   //add dropdown menu for Category column
-  //I don't understand how the select id = 'test' and '#test' pieces work. Should they
-  //be associated with the row #id? --OOOHHH, inline HTML, i see)
-  // deselecting a row where the category column has been changed triggers errors
+  
   dataTable.on('select', function (e, dt, type) {
-    console.log('select', dt[0].length);
-    var dt_indexes = dt[0];  //Need to access dt[0] to get row indexes
-    if (type === 'row') {
+      console.log('select', dt[0].length)
+      var dt_indexes = dt[0]  //Need to access dt[0] to get row indexes
+      if (type === 'row') {
       // Loop through each selectes row
       $.each( dt_indexes, function ( index ) {
 
-        var row = dataTable.row( dt_indexes[index] );
-        // Guard clause to check the row length, return if falsey
-        if (!row.length) {
-          return;
-        }
-        $(row.node()).find('td:eq(5)').html(
-          '<select >' + Category.reduce((options, item) =>
-            options += `<option value="${item}" ${
-              item == row.data().Category ? 'selected' : ''}>${
-              item}</option>`, '') + '</select>'
-        ).on('change', function () {
-          var optionSelected = $('option:selected', this);
-          // changed this.value to optionSelected()
-          var valueSelected = $(optionSelected).val();
-          var row = $(this).closest('tr');
-          var cell = dataTable.cell(row, 6);
-          cell.data(valueSelected);
-        });
-        console.log('toggle');
-        toggleDataAndDraw(row, type, 1);
+      var row = dataTable.row( dt_indexes[index] );
+      // Guard clause to check the row length, return if falsey
+      if (!row.length) {
+        return;
+      }
+      $(row.node()).find('td:eq(6)').html(
+        '<select >' + Category.reduce((options, item) =>
+          options += `<option value="${item}" ${
+            item == row.data().Category ? 'selected' : ''}>${
+            item}</option>`, '') + '</select>'
+      ).on('change', function () {
+        var optionSelected = $('option:selected', this);
+        // changed this.value to optionSelected()
+        var valueSelected = $(optionSelected).val();
+        var row = $(this).closest('tr');
+        var cell = dataTable.cell(row, 6);
+        cell.data(valueSelected);
       });
-    }
+        console.log('toggle')
+      toggleDataAndDraw(row, type, 1);
+    });
+      }
     dataTable.draw();
+        
+    
+  //Deselect doesn't hide the Category dropdown. Needs to write current value to table.
   }).on('deselect', function (e, dt, type) {
-    console.log('deselect', dt[0].length);
-    var dt_indexes = dt[0];  //Need to access dt[0] to get row indexes
+     console.log('deselect', dt[0].length)
+    var dt_indexes = dt[0]  //Need to access dt[0] to get row indexes
     if (type === 'row') {
       //for (i=0; i < dt_indexes.length; i++) {
-      //var row = dataTable.row(dt_indexes[i]);
+      //var row = dataTable.row(dt_indexes[i]); 
       $.each( dt_indexes, function ( index ) {
         var row = dataTable.row( dt_indexes[index] );
-
+    
         //Somewhere in here needs to be a var that saves the current category for each row to be deselected?
         //that would then be set for those columns/rows. But would also need to function for single manual select/deselects
         //(Or is there an easier way by just hiding the div?)
-        //var valuecat =
+        //OR - use writeCell to write current dropdown value to table on deselect?
+        //var valuecat = 
         //var cell = dataTable.cell(row, 6);
         //cell.data(valuecat);
-        // ^ doesn't the call to writeCell below handle this? -- TW
 
-        writeCell($(row.node()).find('select'));
-        toggleDataAndDraw(row, type, 0);
-      });
+      //writeCell($(row.node()).find('select'));
+      toggleDataAndDraw(row, type, 0);
+     } );     
     }
     dataTable.draw();
   });
