@@ -214,17 +214,26 @@ $(document).ready( function () {
       //var row = dataTable.row(dt_indexes[i]); 
       $.each( dt_indexes, function ( index ) {
         var row = dataTable.row( dt_indexes[index] );
+  //
+  //
+  //
         
         //use the guard statement again to fix error when deselecting cells 
         //that have the category value set?
      
+        if(!Category && !Category.length) {
+        writeCell($(row.node()).find('select'));
+        };
+        
+        
+        
         //if Category isn't defined, set Category to current row/column 6 value and writeCell
         //else if Category is defined, writeCell
       
         
-        
-        writeCell($(row.node()).find('select'));
-        
+ //
+ //
+ //
       
         
         toggleDataAndDraw(row, type, 0); 
