@@ -25,7 +25,7 @@ $(document).ready( function () {
         title: 'check-uncheck',
         data: '',
         defaultContent: '0',
-        visible: false //will be false in final version
+        visible: true //will be false in final version
       },
       {
         title: 'checkbox',
@@ -40,7 +40,7 @@ $(document).ready( function () {
       {
         title: 'ID',
         'className': 'dt-left',
-        'visible': false, //will be false in final version
+        'visible': true, //will be false in final version
         data: 'ID'
       },
       {
@@ -163,7 +163,7 @@ $(document).ready( function () {
     var currentRow = dataTable.row(dropdown.closest('tr'));
     var rowData = currentRow.data();
     rowData.Category = dropdown.val();
-    $(currentRow.node()).find('td:eq(6)').html(
+    $(currentRow.node()).find('td:eq(6)').html( //change to td:eq(4) in final version
       currentRow.data().Category
     );
     currentRow.draw();
@@ -185,7 +185,7 @@ $(document).ready( function () {
       if (!row.length) {
         return;
       }
-      $(row.node()).find('td:eq(4)').html(
+      $(row.node()).find('td:eq(6)').html(  //change to td:eq(4) in final version
         '<select >' + Category.reduce((options, item) =>
           options += `<option value="${item}" ${
             item == row.data().Category ? 'selected' : ''}>${
@@ -221,6 +221,8 @@ $(document).ready( function () {
         //if Category isn't defined, set Category to current row/column 6 value and writeCell
         //else if Category is defined, writeCell
       
+        
+        
         writeCell($(row.node()).find('select'));
         
       
