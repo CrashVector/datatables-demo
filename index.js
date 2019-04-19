@@ -25,7 +25,7 @@ $(document).ready( function () {
         title: 'check-uncheck',
         data: '',
         defaultContent: '0',
-        visible: true //will be false in final version
+        visible: false //will be false in final version
       },
       {
         title: 'checkbox',
@@ -40,7 +40,7 @@ $(document).ready( function () {
       {
         title: 'ID',
         'className': 'dt-left',
-        'visible': true, //will be false in final version
+        'visible': false, //will be false in final version
         data: 'ID'
       },
       {
@@ -79,9 +79,9 @@ $(document).ready( function () {
       style: 'multi',
     },
     order: ([
-      [4, 'asc'],
       [5, 'asc'],
-      [3, 'asc']
+      [6, 'asc'],
+      [4, 'asc']
     ]),
     orderFixed: [0, 'desc'],
     dom: '<Bif<t>ilp>',
@@ -141,14 +141,15 @@ $(document).ready( function () {
     var rowSelector1 = [ '#sampleid_10', '#sampleid_2', '#sampleid_401', 
                             '#sampleid_17', '#sampleid_32', '#sampleid_316', '#sampleid_99', 
                             '#sampleid_104', '#sampleid_105', '#sampleid_77', '#sampleid_208'];
-    dataTable.rows(rowSelector1).select();
+    dataTable.rows(rowSelector1).select().order([5, 'asc'],[6, 'asc'],[4, 'asc']).draw();
+   
   };
   
   defaultselect2 = function(dt){
-    var rowSelector1 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401', 
+    var rowSelector2 = [ '#sampleid_37', '#sampleid_404', '#sampleid_401', 
                             '#sampleid_222', '#sampleid_132', '#sampleid_116', '#sampleid_199', 
                             '#sampleid_4', '#sampleid_5', '#sampleid_277', '#sampleid_308'];
-    dataTable.rows(rowSelector1).select();
+    dataTable.rows(rowSelector2).select().order([5, 'asc'],[6, 'asc'],[4, 'asc']).draw();
   };
 
   
@@ -184,7 +185,7 @@ $(document).ready( function () {
       if (!row.length) {
         return;
       }
-      $(row.node()).find('td:eq(6)').html(
+      $(row.node()).find('td:eq(4)').html(
         '<select >' + Category.reduce((options, item) =>
           options += `<option value="${item}" ${
             item == row.data().Category ? 'selected' : ''}>${
@@ -216,9 +217,18 @@ $(document).ready( function () {
         
         //use the guard statement again to fix error when deselecting cells 
         //that have the category value set?
-      writeCell($(row.node()).find('select'));
+     
+        //if Category isn't defined, set Category to current row/column 6 value and writeCell
+        //else if Category is defined, writeCell
+      
+        writeCell($(row.node()).find('select'));
         
-      toggleDataAndDraw(row, type, 0);
+      
+        
+        toggleDataAndDraw(row, type, 0); 
+      
+        
+      
      } );     
     }
     dataTable.draw();
