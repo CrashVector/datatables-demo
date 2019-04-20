@@ -25,7 +25,7 @@ $(document).ready( function () {
         title: 'check-uncheck',
         data: '',
         defaultContent: '0',
-        visible: false //will be false in final version
+        visible: false
       },
       {
         title: 'checkbox',
@@ -40,7 +40,7 @@ $(document).ready( function () {
       {
         title: 'ID',
         'className': 'dt-left',
-        'visible': true, //will be false in final version
+        'visible': false,
         data: 'ID'
       },
       {
@@ -158,7 +158,7 @@ $(document).ready( function () {
     var currentRow = dataTable.row(dropdown.closest('tr'));
     var rowData = currentRow.data();
     rowData.Category = dropdown.val();
-    $(currentRow.node()).find('td:eq(5)').html( //change to td:eq(5) in final version
+    $(currentRow.node()).find('td:eq(4)').html(
       currentRow.data().Category
     );
     currentRow.draw();
@@ -167,18 +167,16 @@ $(document).ready( function () {
   //triggers on select/deselect to move selected rows to top of table and
   //add dropdown menu for Category column
   dataTable.on('select', function (e, dt, type) {
-    console.log('select', dt[0].length);
-    var dt_indexes = dt[0];  //Need to access dt[0] to get row indexes
+    var dt_indexes = dt[0];
     if (type === 'row') {
       // Loop through each selectes row
       $.each( dt_indexes, function ( index ) {
-
         var row = dataTable .row( dt_indexes[index] );
         // Guard clause to check the row length, return if falsey
         if (!row.length) {
           return;
         }
-        $(row.node()).find('td:eq(5)').html(  //change to td:eq(5) in final version
+        $(row.node()).find('td:eq(4)').html(
           '<select >' + Category.reduce((options, item) =>
             options += `<option value="${item}" ${
               item == row.data().Category ? 'selected' : ''}>${
@@ -191,28 +189,20 @@ $(document).ready( function () {
           var cell = dataTable.cell(row, 6);
           cell.data(valueSelected);
         });
-        console.log('toggle');
         toggleDataAndDraw(row, type, 1);
       });
     }
     dataTable.draw();
-  //Deselect doesn't hide the Category dropdown. Needs to write current value to table.
+ 
   }).on('deselect', function (e, dt, type) {
     console.log('deselect', dt[0].length);
-    var dt_indexes = dt[0];  //Need to access dt[0] to get row indexes
+    var dt_indexes = dt[0];
     if (type === 'row') {
-      //for (i=0; i < dt_indexes.length; i++) {
-      //var row = dataTable.row(dt_indexes[i]);
       $.each( dt_indexes, function ( index ) {
         var row = dataTable.row( dt_indexes[index] );
-
-        //use the guard statement again to fix error when deselecting cells
-        //that have the category value set?
-        if(!Category && !Category.length) {
+        if($(row.node()).find('select').length){
           writeCell($(row.node()).find('select'));
         }
-        //if Category isn't defined, set Category to current row/column 6 value and writeCell
-        //else if Category is defined, writeCell
         toggleDataAndDraw(row, type, 0);
       });
     }
@@ -222,13 +212,11 @@ $(document).ready( function () {
   //This function is called to write the check-uncheck value and redraw the table
   var toggleDataAndDraw = (row, type, dataVal) => {
     if (type === 'row') {
-      console.log('toggle');
       dataTable.cell({
         row: row.index(),
         column: 0,
         visible: false
       }).data(dataVal);
-      //dataTable.draw();
     }
   };
 });
